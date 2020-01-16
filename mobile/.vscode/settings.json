@@ -1,0 +1,6 @@
+{
+  "editor.formatOnSave": true,
+  "editor.rulers": [80],
+  "editor.wordWrapColumn": 1000,
+  "prettier.singleQuote": true
+}
