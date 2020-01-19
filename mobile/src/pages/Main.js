@@ -7,6 +7,7 @@ import {
 } from 'expo-location';
 
 import api from '../services/api';
+import { connect, disconnect, subscribeToNewDevs } from '../services/socket';
 
 import DevForm from '../components/DevForm';
 import DevItem from '../components/DevItem';
@@ -38,18 +39,28 @@ function Main({ navigation }) {
     loadInitialPosition();
   }, []);
 
+  useEffect(() => {
+    subscribeToNewDevs(dev => setDevs([...devs, dev]));
+  }, [devs]);
+
+  function setupWebsocket(params) {
+    disconnect();
+    connect(params);
+  }
+
   async function handleSearchDevs(searchParams) {
     const { latitude, longitude } = currentRegion;
 
-    const { data } = await api.get('/search', {
-      params: {
-        latitude,
-        longitude,
-        ...searchParams
-      }
-    });
+    const params = {
+      latitude,
+      longitude,
+      ...searchParams
+    };
+
+    const { data } = await api.get('/search', { params });
 
     setDevs(data.devs);
+    setupWebsocket(params);
   }
 
   function handleRegionChange(region) {
